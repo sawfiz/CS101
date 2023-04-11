@@ -1,0 +1,32 @@
+{
+  "name": "cs101",
+  "version": "1.0.0",
+  "description": "Computer science topics",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch",
+    "start": "webpack serve --open",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sawfiz/CS101.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sawfiz/CS101/issues"
+  },
+  "homepage": "https://github.com/sawfiz/CS101#readme",
+  "devDependencies": {
+    "css-loader": "^6.7.3",
+    "eslint": "^8.38.0",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.2",
+    "webpack": "^5.78.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.2"
+  }
+}
