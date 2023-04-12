@@ -1,70 +1,250 @@
 import './style.css';
 
-// function fibs(n) {
-//   console.log('hi');
-//   console.log('🚀 ~ file: index.js:6 ~ fibs ~ n:', n);
+const Node = (value = null, next = null) => ({
+  value,
+  next,
+});
 
-// else {
-//   let array = fibs(n - 1);
-//   array.push(array[n - 2] + array[n - 1]);
-//   return array;
-// }
-// }
-
-// fibs[1];
-
-function fibs(n) {
-  console.log('🚀 ~ file: index.js:23 ~ test ~ n:', n);
-  if (n === 0) {
-    return [];
-  } else if (n === 1) {
-    return [0];
-  } else if (n === 2) {
-    return [0, 1];
-  } else {
-    let sequence = fibs(n - 1);
-    sequence.push(sequence[n - 3] + sequence[n - 2]);
-    return sequence;
-  }
-}
-
-const sequence = fibs(8);
-console.log('🚀 ~ file: index.js:28 ~ sequence:', sequence);
-
-function merge(left, right) {
-  let newArray = [];
-  const k = left.length + right.length;
-  for (let i = 0; i < k; i++) {
-    if (left.length === 0) {
-      newArray.push(right.shift());
-      continue;
+const List = (head = null, tail = null, size = 0) => {
+  const printList = () => {
+    console.log('Please find the list below:');
+    let string = '';
+    let current = head;
+    while (current) {
+      string += `( ${current.value} ) -> `;
+      current = current.next;
     }
-    if (right.length === 0) {
-      newArray.push(left.shift());
-      continue;
-    }
-    if (right[0] < left[0]) {
-      newArray.push(right.shift());
+    string += 'null';
+    console.log(string);
+  };
+
+  const append = (value) => {
+    console.log(`Append ${value} to the list`);
+    const node = Node(value);
+
+    if (!head) {
+      head = node;
+      tail = node;
     } else {
-      newArray.push(left.shift());
+      tail.next = node;
+      tail = node;
     }
-  }
-  console.log('newArray', newArray);
-  return newArray;
-}
+    size++;
 
-function mergeSort(array) {
-  if (array.length <= 1) return array;
+    printList();
+  };
 
-  const mid = Math.floor(array.length / 2);
-  const left = array.slice(0, mid);
-  console.log('🚀 ~ file: index.js:60 ~ mergeSort ~ left:', left);
-  const right = array.slice(mid);
-  console.log('🚀 ~ file: index.js:62 ~ mergeSort ~ right:', right);
+  const prepend = (value) => {
+    console.log(`Prepend ${value} to the list`);
+    const node = Node(value);
 
-  return merge(mergeSort(left), mergeSort(right));
-}
+    node.next = head;
+    head = node;
+    size++;
+    printList();
+  };
 
-const array = [9, 4, 23, 5, 0, 23, 35];
+  const at = (input) => {
+    const index = +input;
+    if (isNaN(index)) {
+      const errMsg = 'Index needs to be a number';
+      return errMsg;
+    }
+    if (index < 0) {
+      const errMsg = 'Index needs to be a positive number';
+      return errMsg;
+    }
+    if (index >= size) {
+      const errMsg = 'Index provided is too large';
+      return errMsg;
+    }
 
-console.log(mergeSort(array));
+    let current = head;
+    let count = 0;
+    while (count < index) {
+      current = current.next;
+      count++;
+    }
+    return `The value at ${index} is ${current.value}`;
+  };
+
+  const pop = () => {
+    if (!head) {
+      console.log('Empty list, nothing to pop!');
+      printList();
+      return;
+    }
+
+    let current = head;
+    if (!current.next) {
+      head = null;
+      tail = null;
+      console.log('Only one item in the list, it is now empty');
+      printList();
+      return;
+    }
+
+    while (current.next.next) {
+      current = current.next;
+    }
+    current.next = null;
+    tail = current;
+    printList();
+    return;
+  };
+
+  const contains = (value) => {
+    let current = head;
+
+    while (current) {
+      if (current.value === value) {
+        return true;
+      } else {
+        current = current.next;
+      }
+    }
+    return false;
+  };
+
+  const find = (value) => {
+    let current = head;
+    let count = 0;
+
+    while (current) {
+      if (current.value === value) {
+        return count;
+      } else {
+        current = current.next;
+        count++;
+      }
+    }
+    return null;
+  };
+
+  const insertAt = (value, input) => {
+    const index = +input;
+    if (isNaN(index)) {
+      console.log('Index is not a number!');
+      return;
+    }
+    if (index < 0 || index >= size) {
+      console.log('Index is outside the linked list');
+      return;
+    }
+
+    let current = head;
+    let count = 0;
+    while (count < index - 1) {
+      current = current.next;
+      count++;
+    }
+    const node = Node(value, current.next);
+    current.next = node;
+    printList();
+  };
+
+  const removeAt = (input) => {
+    const index = +input;
+    if (isNaN(index)) {
+      console.log('Index is not a number!');
+      return;
+    }
+    if (index < 0 || index >= size) {
+      console.log('Index is outside the linked list');
+      return;
+    }
+
+    let current = head;
+    let count = 0;
+    let last = head;
+    while (count < index) {
+      last = current;
+      current = current.next;
+      count++;
+    }
+    last.next = current.next;
+    printList();
+  };
+
+  return {
+    append,
+    prepend,
+    get head() {
+      return head;
+    },
+    get tail() {
+      return tail;
+    },
+    get size() {
+      return size;
+    },
+    at,
+    pop,
+    contains,
+    find,
+    insertAt,
+    removeAt,
+    printList,
+  };
+};
+
+const list = List();
+
+list.append(1);
+list.append(2);
+list.append(3);
+list.append(4);
+
+list.prepend(0);
+list.prepend(-1);
+
+console.log(list.head);
+console.log(list.tail);
+console.log(list.size);
+
+console.log(list.at('a'));
+console.log(list.at(-1));
+console.log(list.at(0));
+console.log(list.at(1));
+console.log(list.at(2));
+console.log(list.at(5));
+console.log(list.at(6));
+
+console.log(list.contains(-1));
+console.log(list.contains(0));
+console.log(list.contains(1));
+console.log(list.contains(2));
+console.log(list.contains(3));
+console.log(list.contains(4));
+console.log(list.contains(5));
+console.log(list.contains(6));
+
+console.log(list.find(-2));
+console.log(list.find(-1));
+console.log(list.find(0));
+console.log(list.find(1));
+console.log(list.find(2));
+console.log(list.find(3));
+console.log(list.find(4));
+console.log(list.find(5));
+console.log(list.find(6));
+
+list.insertAt(8, 'a');
+list.insertAt(8, -1);
+list.insertAt(8, 8);
+list.insertAt(8, 2);
+list.insertAt(8, 4);
+
+list.removeAt(4)
+list.removeAt(2)
+
+
+list.pop();
+list.pop();
+list.pop();
+list.pop();
+list.pop();
+list.pop();
+list.pop();
+
+console.log('The end');
