@@ -61,8 +61,8 @@ const Tree = (root = null) => {
     };
 
     if (!array.length) return null;
-    // Sort the array first
-    const sortedArray = mergeSort(array);
+    // Remove duplicates, then sort the array
+    const sortedArray = mergeSort([...new Set(array)]);
     // The root of the tree is what's returned by the top level recursion
     root = buildTreeRecursion(sortedArray);
   };
@@ -95,112 +95,50 @@ const Tree = (root = null) => {
   };
 
   const remove = (value) => {
-    // console.log(`Removing ${value}`);
-    let current = root;
-    let parent = root;
-    while (current) {
-      // console.log("🚀 ~ file: index.js:60 ~ remove ~ parent:", parent)
-      // console.log("🚀 ~ file: index.js:61 ~ remove ~ current:", current)
-      if (value < current.data) {
-        // Make sure parent is first assigned to current before reassigning current
-        parent = current;
+    // Function to find the node with minimum value in tree
+    const findMinValueNode = (base) => {
+      let current = base;
+      while (current.left) {
         current = current.left;
+      }
+      return current;
+    };
+
+    // Function to recursively remove a node with a given value
+    const removeRecusion = (current, value) => {
+      if (!current) {
+        return current;
+      }
+
+      if (value < current.data) {
+        current.left = removeRecusion(current.left, value);
       } else if (value > current.data) {
-        // Make sure parent is first assigned to current before reassigning current
-        parent = current;
-        current = current.right;
+        current.right = removeRecusion(current.right, value);
       } else {
-        // Found a match
-        if (!current.left && !current.right) {
-          // Node is a leaf
-          // Special case to remove the root node of a tree with one data
-          if (current === root) {
-            root = null;
-            return;
-          }
-          // console.log(`${value} is a leaf, removing...`);
-          // Determine if the node is left or right leaf of it's parent
-          // Remove the node by making that leaf of it's parent null
-          if (value < parent.data) {
-            parent.left = null;
-          } else {
-            parent.right = null;
-          }
-          return;
-        } else if (current.left) {
-          // node has a left branch
-          let replacement = current.left;
-          let replacementParent = replacement;
-          // find the largest number in the left branch
-          while (replacement.right) {
-            replacementParent = replacement;
-            replacement = replacement.right;
-          }
-          // console.log('🚀 ~ file: index.js:67 ~ remove ~ parent:', parent);
-          // console.log('🚀 ~ file: index.js:97 ~ remove ~ current:', current);
-          // console.log(
-          //   '🚀 ~ file: index.js:85 ~ remove ~ replacement:',
-          //   replacement
-          // );
-          // console.log(
-          //   '🚀 ~ file: index.js:98 ~ remove ~ replacementParent:',
-          //   replacementParent
-          // );
-
-          replacementParent.right = null;
-          if (replacement !== replacementParent) {
-            replacement.left = current.left;
-          }
-          replacement.right = current.right;
-          if (current === root) {
-            root = replacement;
-          } else {
-            if (value < parent.data) {
-              parent.left = replacement;
-            } else {
-              parent.right = replacement;
-            }
-          }
-          // replacementParent.left = current.left;
-          return;
+        // Match found
+        if (!current.left) {
+          // Only 1 right branch
+          return current.right;
+        }
+        if (!current.right) {
+          // Only 1 left branch
+          return current.left;
         } else {
-          // Node had only the right branch
-          let replacement = current.right;
-          let replacementParent = replacement;
-          // find the smallest number in the left branch
-          while (replacement.left) {
-            replacementParent = replacement;
-            replacement = replacement.left;
-          }
-          // console.log('🚀 ~ file: index.js:67 ~ remove ~ parent:', parent);
-          // console.log('🚀 ~ file: index.js:97 ~ remove ~ current:', current);
-          // console.log(
-          //   '🚀 ~ file: index.js:85 ~ remove ~ replacement:',
-          //   replacement
-          // );
-          // console.log(
-          //   '🚀 ~ file: index.js:98 ~ remove ~ replacementParent:',
-          //   replacementParent
-          // );
+          // node had 2 branches
+          // Find the minimum value in the right branch
+          const min = findMinValueNode(current.right);
 
-          replacementParent.right = null;
-          replacement.left = current.left;
-          replacement.right = current.right;
+          // Assign this value to current node
+          current.data = min.data;
 
-          parent.right = replacement;
-          if (value < parent.data) {
-            parent.left = replacement;
-          } else {
-            parent.right = replacement;
-          }
-
-          replacementParent.left = current.left;
-          return;
+          // Remove the node with that minimum value
+          current.right = removeRecusion(current.right, min.data);
         }
       }
-    }
-    // console.log('No match found!');
-    return;
+      return current;
+    };
+
+    root = removeRecusion(root, value);
   };
 
   return {
@@ -229,75 +167,12 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   }
 };
 
-// const array = [
-//   1, 7, 2, 6, 0, 4, 23, 8, 9, 4, 3, 5, 7, 9, 10, 12, 67, 6345, 324,
-// ];
-// // const array = [7,8,9];
-// // Remove duplicates, then sort
-// const sortedArray = mergeSort([...new Set(array)]);
-// console.log('🚀 ~ file: index.js:16 ~ sortedArray:', sortedArray);
-// const tree = Tree();
-// tree.buildTree([10, 5, 15, 3, 7, 12, 18, 1, 4, 6, 8, 11, 14, 16, 20]);
-
-// const tree = Tree();
-// tree.buildTree(sortedArray);
-// console.log(tree.root);
-// prettyPrint(tree.root);
-
-// tree.insert(9);
-// tree.insert(10);
-// tree.insert(10);
-// tree.insert(11);
-// tree.insert(15);
-// tree.insert(13);
-// tree.insert(18);
-// prettyPrint(tree.root);
-
-// tree.remove(18);
-// // prettyPrint(tree.root);
-// tree.remove(18);
-// prettyPrint(tree.root);
-// tree.remove(6);
-// prettyPrint(tree.root);
-// tree.remove(10);
-// prettyPrint(tree.root);
-// tree.remove(4);
-// prettyPrint(tree.root);
-// tree.remove(8);
-// prettyPrint(tree.root);
-// tree.remove(11);
-// prettyPrint(tree.root);
-// tree.remove(12);
-// prettyPrint(tree.root);
-// tree.remove(324);
-// prettyPrint(tree.root);
-
-// const removeDuplicates = (array) => {
-//   const newArray = []
-//   for (let i = 0; i < array.length; i++) {
-//     if (newArray.includes(array[i])) {
-//       continue;
-//     } else {
-//       newArray.push(array[i])
-//     }
-//   }
-//   return newArray;
-// }
-
-// const sortedArray = mergeSort(removeDuplicates(array))
-
-// export default Tree;
-
-// const tree = Tree();
-// tree.buildTree([10, 5, 15, 3, 7, 12, 18, 1, 4, 6, 8, 11, 14, 16, 20]);
-// prettyPrint(tree.root);
-
-
-// tree.insert(18);
-// prettyPrint(tree.root);
-// tree.insert(19);
-// prettyPrint(tree.root);
-// tree.remove(15);
-// prettyPrint(tree.root);
+const tree = Tree();
+tree.buildTree([10, 5, 15, 3, 7, 12, 18, 1, 4, 6, 8, 11, 14, 16, 20]);
+prettyPrint(tree.root);
+tree.remove(15);
+prettyPrint(tree.root);
+tree.remove(16);
+prettyPrint(tree.root);
 
 module.exports = Tree;
