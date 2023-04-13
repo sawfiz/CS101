@@ -150,14 +150,48 @@ const Tree = (root = null) => {
       }
 
       if (value < current.data) {
-        return findRecursive(current.left, value)
+        return findRecursive(current.left, value);
       } else if (value > current.data) {
-        return findRecursive(current.right, value)
-      } else { // Found!
+        return findRecursive(current.right, value);
+      } else {
+        // Found!
         return current;
       }
+    };
+    return findRecursive(root, value);
+  };
+
+  const levelOrder = (fn) => {
+    if (!root) return [];
+    const queue = [];
+    const output = [];
+
+    queue.push(root);
+    while (queue.length) {
+      if (queue[0]) {
+        if (fn) fn(queue[0].data)
+        output.push(queue[0].data);
+        queue.push(queue[0].left);
+        queue.push(queue[0].right);
+      }
+      queue.shift();
     }
-    return findRecursive(root, value)
+    return output;
+  };
+
+
+  const inOrder = (fn) => {
+    const inOrderRecursive = (current, fn) => {
+      if (!current) return;
+
+      inOrderRecursive(current.left, fn)
+      fn(current.data)
+      output.push(current.data)
+      inOrderRecursive(current.right, fn)
+    }
+    const output = [];
+    inOrderRecursive(root, fn);
+    return output;
   }
 
   return {
@@ -171,6 +205,8 @@ const Tree = (root = null) => {
     insert,
     remove,
     find,
+    levelOrder,
+    inOrder,
   };
 };
 
@@ -188,16 +224,22 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 };
 
 const tree = Tree();
-tree.buildTree([10, 5, 15, 3, 7, 12, 18, 1, 4, 6, 8, 11, 14, 16, 20]);
+tree.buildTree([4, 10, 12, 15, 18, 22, 24, 25, 31, 44, 35, 50, 70, 66, 90]);
 prettyPrint(tree.root);
-tree.remove(15);
-prettyPrint(tree.root);
-tree.remove(16);
-prettyPrint(tree.root);
+// tree.remove(15);
+// prettyPrint(tree.root);
+// tree.remove(16);
+// prettyPrint(tree.root);
 console.log(tree.find(10));
 console.log(tree.find(7));
 console.log(tree.find(4));
 console.log(tree.find(1));
 
+function fn(value) {
+  console.log("🚀 ~ file: index.js:222 ~ fn ~ value:", value)
+}
+console.log(tree.levelOrder());
+console.log(tree.levelOrder(fn));
+console.log(tree.inOrder(fn));
 
 module.exports = Tree;
