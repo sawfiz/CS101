@@ -141,6 +141,25 @@ const Tree = (root = null) => {
     root = removeRecusion(root, value);
   };
 
+  // Function which accepts a value and returns the node with the given value
+  const find = (value) => {
+    const findRecursive = (current, value) => {
+      // Nothing found
+      if (!current) {
+        return current;
+      }
+
+      if (value < current.data) {
+        return findRecursive(current.left, value)
+      } else if (value > current.data) {
+        return findRecursive(current.right, value)
+      } else { // Found!
+        return current;
+      }
+    }
+    return findRecursive(root, value)
+  }
+
   return {
     set root(node) {
       root = node;
@@ -151,6 +170,7 @@ const Tree = (root = null) => {
     buildTree,
     insert,
     remove,
+    find,
   };
 };
 
@@ -174,5 +194,10 @@ tree.remove(15);
 prettyPrint(tree.root);
 tree.remove(16);
 prettyPrint(tree.root);
+console.log(tree.find(10));
+console.log(tree.find(7));
+console.log(tree.find(4));
+console.log(tree.find(1));
+
 
 module.exports = Tree;
