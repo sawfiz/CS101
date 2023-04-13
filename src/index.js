@@ -46,8 +46,6 @@ const Tree = (root = null) => {
   const buildTree = (array) => {
     // Function for building a tree from a sorted array
     const buildTreeRecursion = (sortedArray) => {
-      if (!sortedArray.length) return null;
-
       const mid = Math.floor(sortedArray.length / 2);
       const node = Node(sortedArray[mid]);
 
@@ -62,6 +60,7 @@ const Tree = (root = null) => {
       return node;
     };
 
+    if (!array.length) return null;
     // Sort the array first
     const sortedArray = mergeSort(array);
     // The root of the tree is what's returned by the top level recursion
@@ -70,36 +69,29 @@ const Tree = (root = null) => {
 
   // Function for inserting a value into a tree
   const insert = (value) => {
-    // Create a new node of the value
-    const node = Node(value);
-    
-    // If empty tree, insert the node as the root
-    if (root === null) {
-      root = node;
-      return;
-    }
-
-    // Treverse the tree to find a node that the new node should be a leaf for
-    let current = root;
-    let parent = root;
-    while (current) {
-      parent = current;
-      if (value < current.data) {
-        current = current.left;
-      } else if (value > current.data) {
-        current = current.right;
-      } else { // The value already exists in the tree, do nothing.
-        // console.log(`${value} already exists in tree`);
-        return;
+    // Function to recursively insert a value
+    const insertRecursion = (current, value) => {
+      // If empty, insert the node as the root
+      if (current === null) {
+        return Node(value);
       }
-    }
 
-    // Decide left or right side to insert the leaf
-    if (value < parent.data) {
-      parent.left = node;
-    } else {
-      parent.right = node;
-    }
+      // Do nothing if the value exists in the tree.
+      if (value == current.data) {
+        console.log(`${value} already exists in the tree.`);
+        return current;
+      }
+
+      // Decide left or right side to insert the leaf
+      if (value < current.data) {
+        current.left = insertRecursion(current.left, value);
+      } else {
+        current.right = insertRecursion(current.right, value);
+      }
+      return current;
+    };
+
+    root = insertRecursion(root, value);
   };
 
   const remove = (value) => {
@@ -296,10 +288,16 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 
 // export default Tree;
 
-const tree = Tree();
-tree.buildTree([10, 5, 15, 3, 7, 12, 18, 1, 4, 6, 8, 11, 14, 16, 20]);
-prettyPrint(tree.root);
-tree.remove(15);
-prettyPrint(tree.root);
+// const tree = Tree();
+// tree.buildTree([10, 5, 15, 3, 7, 12, 18, 1, 4, 6, 8, 11, 14, 16, 20]);
+// prettyPrint(tree.root);
+
+
+// tree.insert(18);
+// prettyPrint(tree.root);
+// tree.insert(19);
+// prettyPrint(tree.root);
+// tree.remove(15);
+// prettyPrint(tree.root);
 
 module.exports = Tree;
