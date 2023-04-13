@@ -33,4 +33,10 @@ module.exports = {
   optimization: {
     runtimeChunk: 'single',
   },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src/'),
+    },
+    extensions: ['.js'],
+  },
 };

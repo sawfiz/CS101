@@ -4,7 +4,7 @@
   "description": "Computer science topics",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "watch": "webpack --watch",
     "start": "webpack serve --open",
     "build": "webpack"
@@ -24,9 +24,35 @@
     "css-loader": "^6.7.3",
     "eslint": "^8.38.0",
     "html-webpack-plugin": "^5.5.0",
+    "jest": "^29.5.0",
+    "jest-environment-jsdom-global": "^4.0.0",
+    "jest-extended": "^3.2.4",
+    "jest-webpack": "^0.5.1",
     "style-loader": "^3.3.2",
     "webpack": "^5.78.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest",
+      "^.+\\.js$": "babel-jest"
+    },
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "testEnvironment": "jest-environment-jsdom-global",
+    "testURL": "http://localhost/",
+    "setupFilesAfterEnv": [
+      "jest-extended"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)"
+    ]
   }
 }
