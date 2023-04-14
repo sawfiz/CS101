@@ -1,39 +1,5 @@
-// import './style.css';
-// import { mergeSort } from './mergeSort';
-
-function merge(left, right) {
-  let newArray = [];
-  const k = left.length + right.length;
-  for (let i = 0; i < k; i++) {
-    if (left.length === 0) {
-      newArray.push(right.shift());
-      continue;
-    }
-    if (right.length === 0) {
-      newArray.push(left.shift());
-      continue;
-    }
-    if (right[0] < left[0]) {
-      newArray.push(right.shift());
-    } else {
-      newArray.push(left.shift());
-    }
-  }
-  // console.log('newArray', newArray);
-  return newArray;
-}
-
-function mergeSort(array) {
-  if (array.length <= 1) return array;
-
-  const mid = Math.floor(array.length / 2);
-  const left = array.slice(0, mid);
-  // console.log('🚀 ~ file: index.js:60 ~ mergeSort ~ left:', left);
-  const right = array.slice(mid);
-  // console.log('🚀 ~ file: index.js:62 ~ mergeSort ~ right:', right);
-
-  return merge(mergeSort(left), mergeSort(right));
-}
+import './style.css';
+import { mergeSort } from './mergeSort';
 
 const Node = (data = null, left = null, right = null) => ({
   data,
@@ -47,11 +13,9 @@ const Tree = (root = null) => {
     // Function for building a tree from a sorted array
     const buildTreeRecursion = (sortedArray) => {
       if (!sortedArray.length) return null;
-      
+
       const mid = Math.floor(sortedArray.length / 2);
       const node = Node(sortedArray[mid]);
-      console.log("🚀 ~ file: index.js:51 ~ buildTreeRecursion ~ mid:", mid)
-      console.log("🚀 ~ file: index.js:51 ~ buildTreeRecursion ~ sortedArray[mid]:", sortedArray[mid])
 
       if (sortedArray.length <= 1) return node;
 
@@ -66,7 +30,6 @@ const Tree = (root = null) => {
 
     // Remove duplicates, then sort the array
     const sortedArray = mergeSort([...new Set(array)]);
-    console.log("🚀 ~ file: index.js:66 ~ buildTree ~ sortedArray:", sortedArray)
     // The root of the tree is what's returned by the top level recursion
     root = buildTreeRecursion(sortedArray);
   };
@@ -192,8 +155,11 @@ const Tree = (root = null) => {
       if (!current) return;
 
       inOrderRecursive(current.left, fn);
-      fn(current.data);
-      output.push(current.data);
+      if (fn) {
+        fn(current.data);
+      } else {
+        output.push(current.data);
+      }
       inOrderRecursive(current.right, fn);
     };
     const output = [];
@@ -207,8 +173,12 @@ const Tree = (root = null) => {
     const inOrderRecursive = (current, fn) => {
       if (!current) return;
 
-      fn(current.data);
-      output.push(current.data);
+      if (fn) {
+        fn(current.data);
+      } else {
+        output.push(current.data);
+      }
+
       inOrderRecursive(current.left, fn);
       inOrderRecursive(current.right, fn);
     };
@@ -224,8 +194,12 @@ const Tree = (root = null) => {
 
       inOrderRecursive(current.left, fn);
       inOrderRecursive(current.right, fn);
-      fn(current.data);
-      output.push(current.data);
+
+      if (fn) {
+        fn(current.data);
+      } else {
+        output.push(current.data);
+      }
     };
     const output = [];
     inOrderRecursive(root, fn);
@@ -285,7 +259,7 @@ const Tree = (root = null) => {
   // Write a rebalance function which rebalances an unbalanced tree.
   // Tip: You’ll want to use a traversal method to provide a new array to the buildTree function.
   const rebalance = () => {
-    const array = inOrder(fn);
+    const array = inOrder();
     buildTree(array);
   };
 
@@ -368,4 +342,4 @@ console.log(tree.isBalanced());
 tree.rebalance();
 prettyPrint(tree.root);
 
-module.exports = Tree;
+// module.exports = Tree;
