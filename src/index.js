@@ -46,8 +46,12 @@ const Tree = (root = null) => {
   const buildTree = (array) => {
     // Function for building a tree from a sorted array
     const buildTreeRecursion = (sortedArray) => {
+      if (!sortedArray.length) return null;
+      
       const mid = Math.floor(sortedArray.length / 2);
       const node = Node(sortedArray[mid]);
+      console.log("🚀 ~ file: index.js:51 ~ buildTreeRecursion ~ mid:", mid)
+      console.log("🚀 ~ file: index.js:51 ~ buildTreeRecursion ~ sortedArray[mid]:", sortedArray[mid])
 
       if (sortedArray.length <= 1) return node;
 
@@ -60,9 +64,9 @@ const Tree = (root = null) => {
       return node;
     };
 
-    if (!array.length) return null;
     // Remove duplicates, then sort the array
     const sortedArray = mergeSort([...new Set(array)]);
+    console.log("🚀 ~ file: index.js:66 ~ buildTree ~ sortedArray:", sortedArray)
     // The root of the tree is what's returned by the top level recursion
     root = buildTreeRecursion(sortedArray);
   };
@@ -161,6 +165,9 @@ const Tree = (root = null) => {
     return findRecursive(root, value);
   };
 
+  // Write a levelOrder function which accepts another function as a parameter.
+  // levelOrder should traverse the tree in breadth-first level order and
+  // provide each node as the argument to the provided function.
   const levelOrder = (fn) => {
     if (!root) return [];
     const queue = [];
@@ -169,7 +176,7 @@ const Tree = (root = null) => {
     queue.push(root);
     while (queue.length) {
       if (queue[0]) {
-        if (fn) fn(queue[0].data)
+        if (fn) fn(queue[0].data);
         output.push(queue[0].data);
         queue.push(queue[0].left);
         queue.push(queue[0].right);
@@ -179,20 +186,108 @@ const Tree = (root = null) => {
     return output;
   };
 
-
+  // Refer to https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
   const inOrder = (fn) => {
     const inOrderRecursive = (current, fn) => {
       if (!current) return;
 
-      inOrderRecursive(current.left, fn)
-      fn(current.data)
-      output.push(current.data)
-      inOrderRecursive(current.right, fn)
-    }
+      inOrderRecursive(current.left, fn);
+      fn(current.data);
+      output.push(current.data);
+      inOrderRecursive(current.right, fn);
+    };
+    const output = [];
+    inOrderRecursive(root, fn);
+    console.log('🚀 ~ file: index.js:196 ~ inOrder ~ output:', output);
+    return output;
+  };
+
+  // Refer to https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
+  const preOrder = (fn) => {
+    const inOrderRecursive = (current, fn) => {
+      if (!current) return;
+
+      fn(current.data);
+      output.push(current.data);
+      inOrderRecursive(current.left, fn);
+      inOrderRecursive(current.right, fn);
+    };
     const output = [];
     inOrderRecursive(root, fn);
     return output;
-  }
+  };
+
+  // Refer to https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
+  const postOrder = (fn) => {
+    const inOrderRecursive = (current, fn) => {
+      if (!current) return;
+
+      inOrderRecursive(current.left, fn);
+      inOrderRecursive(current.right, fn);
+      fn(current.data);
+      output.push(current.data);
+    };
+    const output = [];
+    inOrderRecursive(root, fn);
+    return output;
+  };
+
+  // Write a height function which accepts a node and returns its height.
+  // Height is defined as the number of edges in longest path from a given node to a leaf node.
+  const height = (node) => {
+    if (!node) return 0;
+    let countLeft = height(node.left) + 1;
+    let countRight = height(node.right) + 1;
+    return Math.max(countLeft, countRight);
+  };
+
+  // Write a depth function which accepts a node and returns its depth.
+  // Depth is defined as the number of edges in path from a given node to the tree’s root node.
+  const depth = (node) => {
+    const depthRecursive = (base, node) => {
+      if (base.data === node.data) return 0;
+      if (node.data < base.data) {
+        return depthRecursive(base.left, node) + 1;
+      } else {
+        return depthRecursive(base.right, node) + 1;
+      }
+    };
+    if (node) return depthRecursive(root, node);
+  };
+
+  // Write a isBalanced function which checks if the tree is balanced.
+  // A balanced tree is one where the difference between heights of left subtree and right subtree
+  // of every node is not more than 1.
+  const isBalanced = () => {
+    const isBalancedRecursive = (base) => {
+      const leftHeight = base.left ? height(base.left) : 0;
+      const rightHeight = base.right ? height(base.right) : 0;
+      if (Math.abs(leftHeight - rightHeight) > 1) {
+        return false;
+      } else {
+        const leftIsBalanced = base.left
+          ? isBalancedRecursive(base.left)
+          : true;
+        if (!leftIsBalanced) {
+          return false;
+        }
+        const rightIsBalanced = base.right
+          ? isBalancedRecursive(base.right)
+          : true;
+        if (!rightIsBalanced) {
+          return false;
+        } else return true;
+      }
+    };
+    return isBalancedRecursive(root);
+  };
+
+  // Write a rebalance function which rebalances an unbalanced tree.
+  // Tip: You’ll want to use a traversal method to provide a new array to the buildTree function.
+  const rebalance = () => {
+    const array = inOrder(fn);
+    buildTree(array);
+  };
 
   return {
     set root(node) {
@@ -207,6 +302,12 @@ const Tree = (root = null) => {
     find,
     levelOrder,
     inOrder,
+    preOrder,
+    postOrder,
+    height,
+    depth,
+    isBalanced,
+    rebalance,
   };
 };
 
@@ -223,23 +324,48 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   }
 };
 
+function fn(value) {
+  console.log('🚀 ~ file: index.js:222 ~ fn ~ value:', value);
+}
+
 const tree = Tree();
-tree.buildTree([4, 10, 12, 15, 18, 22, 24, 25, 31, 44, 35, 50, 70, 66, 90]);
+tree.buildTree([4, 10, 12, 15, 18, 22, 24, 25, 31, 44, 35, 50, 70, 66, 90, 99]);
 prettyPrint(tree.root);
 // tree.remove(15);
 // prettyPrint(tree.root);
 // tree.remove(16);
 // prettyPrint(tree.root);
-console.log(tree.find(10));
-console.log(tree.find(7));
-console.log(tree.find(4));
-console.log(tree.find(1));
+// console.log(tree.find(10));
+// console.log(tree.find(7));
+// console.log(tree.find(4));
+// console.log(tree.find(1));
 
-function fn(value) {
-  console.log("🚀 ~ file: index.js:222 ~ fn ~ value:", value)
-}
-console.log(tree.levelOrder());
-console.log(tree.levelOrder(fn));
-console.log(tree.inOrder(fn));
+// console.log(tree.levelOrder());
+// console.log(tree.levelOrder(fn));
+// console.log(tree.inOrder(fn));
+// console.log(tree.preOrder(fn));
+// console.log(tree.postOrder(fn));
+// console.log(tree.height(tree.find(25)));
+// console.log(tree.height(tree.find(15)));
+// console.log(tree.depth(tree.find(25)));
+// console.log(tree.depth(tree.find(15)));
+// console.log(tree.depth(tree.find(10)));
+// console.log(tree.depth(tree.find(12)));
+// console.log(tree.depth(tree.find(1)));
+console.log(tree.isBalanced());
+// tree.remove(18);
+// prettyPrint(tree.root);
+// console.log(tree.isBalanced());
+tree.remove(18);
+prettyPrint(tree.root);
+console.log(tree.isBalanced());
+tree.remove(22);
+prettyPrint(tree.root);
+console.log(tree.isBalanced());
+tree.remove(24);
+prettyPrint(tree.root);
+console.log(tree.isBalanced());
+tree.rebalance();
+prettyPrint(tree.root);
 
 module.exports = Tree;
